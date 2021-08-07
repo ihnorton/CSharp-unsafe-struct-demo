@@ -13,6 +13,7 @@ double sum(std::span<double> v) {
 }
 
 CStatus aux_sum_double(double* inptr, size_t nelem, double* outptr) {
+    std::cout << "  addrof inptr: " << inptr << std::endl;
     auto v = std::span<double>(inptr, nelem);
     double result = sum(v);
 

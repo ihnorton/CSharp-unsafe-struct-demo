@@ -14,7 +14,7 @@ public static class LibFoo {
 
 namespace CSDemo {
 public unsafe class Class1 {
-  public unsafe static void Main() {
+  public unsafe static void runIt() {
     int res = 0;
     LibFoo.doit(2, &res);
 
@@ -26,4 +26,11 @@ public unsafe class Class1 {
     Console.WriteLine("C# handle_t* is: {0:X}", (UInt64)h);
   }
 }
+
+public class Class2 {
+  public static void Main() {
+      Class1.runIt();
+  }
 }
+
+} // namespace CSDemo

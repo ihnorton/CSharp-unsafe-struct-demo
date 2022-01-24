@@ -17,7 +17,12 @@ public unsafe partial class FooHandle : SafeHandle {
 
   // Deallocator: call native free with CER guarantees from SafeHandle
   override protected bool ReleaseHandle() {
+    // Free the native object
     LibFoo.handle_free(this);
+
+    // Invalidate the contained pointer
+    SetHandle(IntPtr.Zero);
+
     return true;
   }
 

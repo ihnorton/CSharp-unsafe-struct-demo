@@ -6,9 +6,11 @@ typedef struct handle_t {
 } handle_t;
 
 void handle_alloc(handle_t **p) {
-  *p = malloc(sizeof(handle_t));
+  handle_t* tmp;
+  tmp = (handle_t*)malloc(sizeof(handle_t));
 
-  printf("handle_t* is: %p\n", *p);
+  printf("handle_t* is: %p\n", tmp);
+  *p = tmp;
 }
 
 void doit(int in, int *out) { *out = in + 10; }

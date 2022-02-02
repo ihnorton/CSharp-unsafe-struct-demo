@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public unsafe partial class FooHandle : SafeHandle {
 
@@ -48,16 +49,50 @@ public unsafe partial class LibFoo {
 
   [DllImport("libfoo.dylib")]
   public static extern void handle_free(handle_t* handle);
+
+  [DllImport("libfoo.dylib")]
+  public static extern void return_string(char** p);
+
 }
 
-
-
 namespace CSDemo {
+
+// from https://github.com/dotnet/ClangSharp/blob/67c1e5243b9d58f2b28f10e3f9a82f7537fd9d88/sources/ClangSharp.Interop/Internals/SpanExtensions.cs
+// MIT License
+public static unsafe class SpanExtensions
+{
+    public static string AsString(this Span<byte> self) => AsString((ReadOnlySpan<byte>)self);
+
+    public static string AsString(this ReadOnlySpan<byte> self)
+    {
+        if (self.IsEmpty)
+        {
+            return string.Empty;
+        }
+
+        fixed (byte* pSelf = self)
+        {
+            return Encoding.UTF8.GetString(pSelf, self.Length);
+        }
+    }
+}
+
 public class Class1 {
 
   FooHandle theFoo = new FooHandle();
+
+  public unsafe string get_string() {
+    char* bp;
+    LibFoo.return_string(&bp);
+    Console.WriteLine("char* in C# is: {0:X}", (UInt64)bp);
+
+    var span = new ReadOnlySpan<byte>(bp, int.MaxValue);
+    return span.Slice(0, span.IndexOf((byte)'\0')).AsString();
+  }
   public void runIt() {
     Console.WriteLine("C# handle_t* is: {0:X}", (UInt64)this.theFoo.get());
+
+    Console.WriteLine("String from C# is: {0}", get_string());
   }
 }
 

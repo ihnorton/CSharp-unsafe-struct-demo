@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 typedef struct handle_t {
   int internal;
@@ -14,3 +15,12 @@ void handle_alloc(handle_t **p) {
 }
 
 void doit(int in, int *out) { *out = in + 10; }
+
+void return_string(const char** out) {
+  const char msg[] = "hello, world";
+  char* p = (char*)malloc(sizeof(msg) + 1);
+  strcpy(p, (char*)&msg);
+
+  printf("char* will be: %p\n", p);
+  *out = p;
+}

@@ -51,7 +51,7 @@ public unsafe partial class LibFoo {
   public static extern void handle_free(handle_t* handle);
 
   [DllImport("libfoo.dylib")]
-  public static extern void return_string(char** p);
+  public static extern void return_string(sbyte** p);
 
 }
 
@@ -77,22 +77,60 @@ public static unsafe class SpanExtensions
     }
 }
 
+public unsafe partial class LibC {
+  public unsafe struct handle_t {};
+
+  [DllImport("libc")]
+  public unsafe static extern void
+  free(void* p);
+}
+
+public unsafe class OutString : IDisposable {
+  public sbyte* char_p;
+
+ public OutString() { char_p = null; }
+ public static implicit operator string(OutString s) {
+    if (s.char_p == null) {
+      return String.Empty;
+    } else {
+      var span = new ReadOnlySpan<byte>((char*)s.char_p, int.MaxValue);
+      return span.Slice(0, span.IndexOf((byte)'\0')).AsString();
+    }
+  }
+
+  public void Dispose() => Dispose(true);
+
+  protected virtual void Dispose(bool disposing) {
+    if (char_p != null) {
+      LibC.free(char_p);
+    }
+    char_p = null;
+  }
+
+  ~OutString() {
+    Dispose(false);
+  }
+}
 public class Class1 {
 
   FooHandle theFoo = new FooHandle();
 
   public unsafe string get_string() {
-    char* bp;
-    LibFoo.return_string(&bp);
-    Console.WriteLine("char* in C# is: {0:X}", (UInt64)bp);
+    var s = new OutString();
+    fixed (sbyte** char_p = &s.char_p) {
+      LibFoo.return_string(char_p);
+    }
 
-    var span = new ReadOnlySpan<byte>(bp, int.MaxValue);
-    return span.Slice(0, span.IndexOf((byte)'\0')).AsString();
+    return s;
   }
   public void runIt() {
     Console.WriteLine("C# handle_t* is: {0:X}", (UInt64)this.theFoo.get());
 
-    Console.WriteLine("String from C# is: {0}", get_string());
+    Console.WriteLine("\n----\n");
+
+    var s = get_string();
+    Console.WriteLine("String from C# is: {0}", s);
+    GC.Collect();
   }
 }
 

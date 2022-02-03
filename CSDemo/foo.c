@@ -17,10 +17,15 @@ void handle_alloc(handle_t **p) {
 void doit(int in, int *out) { *out = in + 10; }
 
 void return_string(const char** out) {
+  printf("got char**: %p\n", out);
+
   const char msg[] = "hello, world";
   char* p = (char*)malloc(sizeof(msg) + 1);
+  p[sizeof(msg)] = '\0';
   strcpy(p, (char*)&msg);
 
   printf("char* will be: %p\n", p);
   *out = p;
+
+  printf("char* should be: %p\n", *out);
 }

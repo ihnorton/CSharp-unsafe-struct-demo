@@ -132,6 +132,16 @@ public class Class1 {
     Console.WriteLine("String from C# is: {0}", s);
     GC.Collect();
   }
+
+  // usage testing, replaced by get_array
+  public Int32 do_span() {
+    var a1 = new Int32[3]{1000,2,3};
+
+    var a1_bytes = MemoryMarshal.AsBytes(a1.AsSpan());
+    var a2_span = MemoryMarshal.Cast<byte, Int32>(a1_bytes);
+
+    return a2_span.Slice(0,1)[0];
+  }
 }
 
 public class Class2 {

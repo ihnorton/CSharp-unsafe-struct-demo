@@ -53,6 +53,8 @@ public unsafe partial class LibFoo {
   [DllImport("libfoo.dylib")]
   public static extern void return_string(sbyte** p);
 
+  [DllImport("libfoo.dylib")]
+  public static extern void return_int32_array(void** p, UInt32* size);
 }
 
 namespace CSDemo {
@@ -123,6 +125,24 @@ public class Class1 {
 
     return s;
   }
+
+  public unsafe Int32[] get_array() {
+    ReadOnlySpan<byte> bytes_span;
+    Int32 size = 0;
+    void* p = null;
+
+    Console.WriteLine("here!");
+    LibFoo.return_int32_array(&p, (UInt32*)&size);
+
+    Console.WriteLine("p is: {0:X}", (UInt64)p);
+    Console.WriteLine("size is: {0}", size);
+
+    bytes_span = new ReadOnlySpan<byte>(p, size);
+
+    var res = MemoryMarshal.Cast<byte, Int32>(bytes_span).Slice(0).ToArray();
+    Console.WriteLine("res is: {0}", res.ToString());
+    return res;
+  }
   public void runIt() {
     Console.WriteLine("C# handle_t* is: {0:X}", (UInt64)this.theFoo.get());
 
@@ -148,6 +168,11 @@ public class Class2 {
   public static void Main() {
       var c1 = new Class1();
       c1.runIt();
+
+      Console.WriteLine("--------- --------");
+
+      var res = c1.get_array();
+      Console.WriteLine("array from C is: '{0}'", string.Join(", ", res));
   }
 }
 

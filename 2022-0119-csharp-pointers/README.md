@@ -1,4 +1,8 @@
-# Demo using unsafe struct for opaque pointer handles
+# Misc C#/C interop hacking
+
+1) Reading pointer+size into Span -> Array
+
+2) Demo using unsafe struct for opaque pointer handles
 
 Technique from: https://www.codeproject.com/Articles/339290/PInvoke-pointer-safety-Replacing-IntPtr-with-unsaf
 

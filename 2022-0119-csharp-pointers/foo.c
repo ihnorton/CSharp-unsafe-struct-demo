@@ -48,3 +48,12 @@ void return_int32_array(void** out, uint32_t* size) {
 
   printf("!! done\n");
 }
+
+void set_uint64(uint64_t size_put, uint64_t* size) {
+  printf("-------------------\n");
+  printf("target: %p\n", size);
+  printf("  setting: %llu\n", size_put);
+  *size = size_put;
+  printf("  new value: %llu\n", size_put);
+  printf("-------------------\n");
+}

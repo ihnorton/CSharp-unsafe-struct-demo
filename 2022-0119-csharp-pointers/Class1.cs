@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-
+using System.Collections.Generic;
 public unsafe partial class FooHandle : SafeHandle {
 
   // Constructor for a FooHandle
@@ -55,6 +55,9 @@ public unsafe partial class LibFoo {
 
   [DllImport("libfoo.dylib")]
   public static extern void return_int32_array(void** p, UInt32* size);
+
+  [DllImport("libfoo.dylib")]
+  public static extern void set_uint64(UInt64 size_put, UInt64* size);
 }
 
 namespace CSDemo {
@@ -117,6 +120,25 @@ public class Class1 {
 
   FooHandle theFoo = new FooHandle();
 
+  internal unsafe struct BufferSizes {
+    public fixed UInt64 data[1];
+    public fixed UInt64 offsets[1];
+    public fixed UInt64 validity[1];
+
+    public BufferSizes(UInt64 data, UInt64 offsets, UInt64 validity) {
+      this.data[0] = data;
+      this.offsets[0] = offsets;
+      this.validity[0] = validity;
+    }
+    public override string ToString() {
+      fixed (UInt64* d = this.data)
+      fixed (UInt64* o = this.offsets)
+      fixed (UInt64* v = this.validity) {
+        return *d + " " + *o + " " + *v;
+      }
+    }
+  }
+
   public unsafe string get_string() {
     var s = new OutString();
     fixed (sbyte** char_p = &s.char_p) {
@@ -162,11 +184,25 @@ public class Class1 {
 
     return a2_span.Slice(0,1)[0];
   }
+
+  public unsafe void do_sizes() {
+    Dictionary<string, Class1.BufferSizes> sizes = new Dictionary<string, BufferSizes>();
+
+    sizes.Add("foo", new Class1.BufferSizes(0,0,0));
+
+    var x = sizes["foo"];
+    LibFoo.set_uint64(11, x.data);
+
+    Console.WriteLine("val return is: {0}", sizes["foo"]);
+    Console.WriteLine("===============");
+  }
 }
 
 public class Class2 {
   public static void Main() {
       var c1 = new Class1();
+      c1.do_sizes();
+
       c1.runIt();
 
       Console.WriteLine("--------- --------");

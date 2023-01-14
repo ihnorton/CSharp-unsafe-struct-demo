@@ -1,5 +1,7 @@
 # CSharp-Cpp-Array-Example
 
+(originally: https://github.com/ihnorton/CSharp-Cpp-Array-Example)
+
 Example calling C++ array-processing example from C#
 
 ## Build

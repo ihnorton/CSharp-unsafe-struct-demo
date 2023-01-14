@@ -1,5 +1,6 @@
 [package]
-name = "ihn_2023-array-proc-shared-lib-rs"
+name = "array_proc_shared_lib-rs"
+create-type = ["cdylib"]
 version = "0.1.0"
 edition = "2021"
 

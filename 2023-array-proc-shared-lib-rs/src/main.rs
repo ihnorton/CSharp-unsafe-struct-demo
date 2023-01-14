@@ -1,3 +1,12 @@
+use core::slice;
+
+#[no_mangle]
+pub unsafe extern "C" fn rust_sum(data: *const f64, len: usize) -> f64 {
+    let slice = slice::from_raw_parts(data, len);
+    return sum(slice);
+}
+
+
 pub fn sum(slice: &[f64]) -> f64 {
     return slice.iter().sum();
 }

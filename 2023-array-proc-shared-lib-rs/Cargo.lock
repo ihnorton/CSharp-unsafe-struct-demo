@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "ihn_2023-array-proc-shared-lib-rs"
+name = "array_proc_shared_lib-rs"
 version = "0.1.0"

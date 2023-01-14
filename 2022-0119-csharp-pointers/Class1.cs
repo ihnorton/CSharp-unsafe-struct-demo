@@ -139,6 +139,10 @@ public class Class1 {
     }
   }
 
+  class BufferSizesAux {
+    BufferSizes _data;
+  }
+
   public unsafe string get_string() {
     var s = new OutString();
     fixed (sbyte** char_p = &s.char_p) {
@@ -190,8 +194,9 @@ public class Class1 {
 
     sizes.Add("foo", new Class1.BufferSizes(0,0,0));
 
-    var x = sizes["foo"];
-    LibFoo.set_uint64(11, x.data);
+    var xsz = sizes["foo"];
+    var pinned_sizes = System.Runtime.InteropServices.GCHandle.Alloc(xsz, System.Runtime.InteropServices.GCHandleType.Pinned);
+    LibFoo.set_uint64(11, pinned_sizes.data);
 
     Console.WriteLine("val return is: {0}", sizes["foo"]);
     Console.WriteLine("===============");
